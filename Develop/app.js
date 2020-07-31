@@ -7,7 +7,7 @@ const port = 8000;
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
-
+app.use(express.static(__dirname + '/public'));
 const characters = [
     {
         name: "Person_Man",
@@ -32,6 +32,26 @@ app.get("/", function(req,res){
 app.get("/notes", function(req,res){
     res.sendFile(path.join(__dirname + "/public/", "notes.html"));
 });
+app.get("/api/notes", function(req,res){
+    var myobj;
+    fs.readFileSync(__dirname + "/db/db.json","utf8",function(error,data){
+        if(error) return console.log(error);
+        console.log(data);
+        console.log(JSON.parse(data));
+        myobj = JSON.parse(data);
+    });
+    return myobj;
+});
+app.post("/api/notes", function(req,res){
+    const newData = req.body;
+
+    console.log(newData);
+    fs.appendFileSync(__dirname + "/db/db.json", JSON.stringify(newData) + "\n", function(err){
+        if(err) throw err;
+        console.log("Data saved!");
+    });
+});
+/*
 app.get("/api/characters", function(req,res){
     return res.json(characters);
 });
@@ -42,7 +62,7 @@ app.get("/api/characters/:character",function(req,res){
     }
     return res.send("Not real dude bro");
 });
-
+*/
 app.listen(port,function(){
     console.log("Server listening on: http://localhost:" + port);
 });
