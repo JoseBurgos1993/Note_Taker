@@ -8,61 +8,49 @@ const port = 8000;
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(express.static(__dirname + '/public'));
-const characters = [
-    {
-        name: "Person_Man",
-        age: "50",
-        occupation: "Orange Juice Salesman"
-    },
-    {
-        name: "Potato_Henry",
-        age: "7",
-        occupation: "Horizontal Dolphin"
-    },
-    {
-        name: "Them",
-        age: "Hello",
-        occupation: "Friends"
-    }
-];
 
 app.get("/", function(req,res){
     res.sendFile(path.join(__dirname + "/public/", "index.html"));
 });
+
 app.get("/notes", function(req,res){
     res.sendFile(path.join(__dirname + "/public/", "notes.html"));
 });
+
 app.get("/api/notes", function(req,res){
-    var myobj;
-    fs.readFileSync(__dirname + "/db/db.json","utf8",function(error,data){
-        if(error) return console.log(error);
-        console.log(data);
-        console.log(JSON.parse(data));
-        myobj = JSON.parse(data);
-    });
-    return myobj;
+    const data = fs.readFileSync(__dirname+"/db/db.json", "utf8");
+    res.send(JSON.parse(data));
 });
+
+app.delete("/api/notes/:index", function(req,res){
+    const data = JSON.parse(fs.readFileSync(__dirname+"/db/db.json", "utf8"));
+    for(let i = 0; i < data.length; i++){
+        if(data[i].id == req.params.index){
+            data.splice(i,1);
+        }
+    }
+    fs.writeFileSync(__dirname + "/db/db.json", JSON.stringify(data) + "\n", function(err){
+        if(err) throw err;
+        console.log("Data Deleted!");
+    });
+
+});
+
 app.post("/api/notes", function(req,res){
     const newData = req.body;
+    console.log(req.body);
+    const data = JSON.parse(fs.readFileSync(__dirname+"/db/db.json", "utf8"));
 
-    console.log(newData);
-    fs.appendFileSync(__dirname + "/db/db.json", JSON.stringify(newData) + "\n", function(err){
+    const newID = data[data.length - 1].id + 1;
+    newData.id = newID;
+
+    data.push(newData);
+    fs.writeFileSync(__dirname + "/db/db.json", JSON.stringify(data) + "\n", function(err){
         if(err) throw err;
         console.log("Data saved!");
     });
 });
-/*
-app.get("/api/characters", function(req,res){
-    return res.json(characters);
-});
-app.get("/api/characters/:character",function(req,res){
-    const chosen = req.params.character;
-    for(let i = 0; i < characters.length; i++){
-        if(chosen === characters[i].name) return res.json(characters[i]);
-    }
-    return res.send("Not real dude bro");
-});
-*/
+
 app.listen(port,function(){
     console.log("Server listening on: http://localhost:" + port);
 });

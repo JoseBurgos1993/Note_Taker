@@ -51,7 +51,6 @@ const renderActiveNote = () => {
 
 // Get the note data from the inputs, save it to the db and update the view
 const handleNoteSave = function () {
-  console.log("CLICKED SAVE");
   const newNote = {
     title: $noteTitle.val(),
     text: $noteText.val(),
@@ -127,7 +126,7 @@ const renderNoteList = (notes) => {
   if (notes.length === 0) {
     noteListItems.push(create$li("No saved Notes", false));
   }
-
+  
   notes.forEach((note) => {
     const $li = create$li(note.title).data(note);
     noteListItems.push($li);
