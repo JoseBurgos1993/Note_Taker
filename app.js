@@ -33,6 +33,7 @@ app.delete("/api/notes/:index", function(req,res){
         if(err) throw err;
         console.log("Data Deleted!");
     });
+    res.end();
 
 });
 
@@ -52,6 +53,7 @@ app.post("/api/notes", function(req,res){
         if(err) throw err;
         console.log("Data saved!");
     });
+    res.end();
 });
 
 app.listen(PORT,function(){
