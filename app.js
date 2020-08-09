@@ -40,9 +40,12 @@ app.post("/api/notes", function(req,res){
     const newData = req.body;
     console.log(req.body);
     const data = JSON.parse(fs.readFileSync(__dirname+"/db/db.json", "utf8"));
-
-    const newID = data[data.length - 1].id + 1;
-    newData.id = newID;
+    if(data.length == 0){
+        newData.id = 1;
+    } else{
+        const newID = data[data.length - 1].id + 1;
+        newData.id = newID;
+    }
 
     data.push(newData);
     fs.writeFileSync(__dirname + "/db/db.json", JSON.stringify(data) + "\n", function(err){
